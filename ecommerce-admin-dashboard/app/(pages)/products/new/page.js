@@ -24,12 +24,9 @@ export default function CreateProduct() {
     stock: 0,
     sku: "",
     discount: 0,
-    ratings: 0,
-    numberOfReviews: 0,
     tags: [],
     isPublished: false,
-    isFeatured: false,
-    updatedBy: "",
+    isFeatured: false
   });
   
   // const [productData, setProductData] = useState({
@@ -72,36 +69,6 @@ export default function CreateProduct() {
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    const { data: session, status } = useSession();
-    // Submit logic here
-    try {
-      const response = await axios.post(`https://8080-mazedul956-ecommercesol-vh0txgc5lvq.ws-us117.gitpod.io/api/product/upload-product`, {
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${session?.accessToken}`, // Send token in header
-        },
-        
-      })
-
-      console.log(response)
-
-      // if (!response.ok) throw new Error('Failed to create product');
-
-      // router.push('/products');
-    } catch (error) {
-      console.log(error);
-      console.error("Error submitting product:", error);
-      setErrors({ submit: "Failed to create product. Try again later." });
-    } finally {
-      setLoading(false);
-    }
-    // console.log(newProduct)
-    // router.push('/products');
   };
 
   const handleAddVariant = () => {
@@ -201,13 +168,19 @@ const handleUploadImages = async () => {
     }));
   };
 
+  const handleSubmit = () => {}
+
+  const { data: session } = useSession();
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
       {/* Header */}
       <NewHeader
         status={status}
         setStatus={setStatus}
-        handleSubmit={handleSubmit}
+        session={session}
+        productData={productData}
+        validateForm={validateForm}
       />
 
       {/* Form Sections */}
@@ -222,6 +195,7 @@ const handleUploadImages = async () => {
         <ProductForm 
           activeSection={activeSection}
           errors={errors}
+          setErrors={setErrors}
           tempTag={tempTag}
           setTempTag={setTempTag}
           productData={productData}

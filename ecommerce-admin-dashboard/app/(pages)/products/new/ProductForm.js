@@ -4,12 +4,14 @@ import {
     TrashIcon,
     PlusIcon,
 } from "@heroicons/react/24/outline";
+import { useSession } from 'next-auth/react';
 const categories = ["Electronics", "Fashion", "Home & Kitchen", "Books"];
 const brands = ["Apple", "Samsung", "Nike", "Sony"];
 
 const ProductForm = ({
     activeSection, 
     errors, 
+    setErrors,
     tempTag, 
     setTempTag, 
     productData, 
@@ -21,6 +23,8 @@ const ProductForm = ({
     removeTag,
     handleAddVariant
 }) => {
+  
+
   return (
     <div className="lg:col-span-3 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm dark:shadow-gray-900 transition-colors">
           {activeSection === "basic" && (
@@ -206,7 +210,7 @@ const ProductForm = ({
                       onChange={(e) =>
                         setProductData({
                           ...productData,
-                          price: e.target.value,
+                          price: Number(e.target.value) || 0
                         })
                       }
                       className={`mt-1 block w-full rounded-lg border ${
@@ -227,7 +231,7 @@ const ProductForm = ({
                       onChange={(e) =>
                         setProductData({
                           ...productData,
-                          sellingPrice: e.target.value,
+                          sellingPrice: Number(e.target.value) || 0
                         })
                       }
                       className="mt-1 block w-full rounded-lg border border-gray-200 p-2"
