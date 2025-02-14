@@ -123,7 +123,7 @@ async function userSignInController(req, res) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production", // Secure in production
       sameSite: "Lax", // Prevent CSRF attacks
-      maxAge: 8 * 60 * 60 * 1000, // 8 hours in milliseconds
+      maxAge: 72 * 60 * 60 * 1000, // 8 hours in milliseconds
     };
 
     // Send response with token in a cookie

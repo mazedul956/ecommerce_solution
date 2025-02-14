@@ -1,12 +1,6 @@
 import axios from "axios";
-import { getSession, useSession } from "next-auth/react";
 
 export const getAllProducts = async (searchParamsPromise) => {
-  const session = await getSession();
-  console.log("token", session?.accessToken)
-  if (!session || !session.accessToken) {
-    throw new Error("Unauthorized: No session or token found");
-  }
   try {
     const searchParams = await searchParamsPromise;
     const query = new URLSearchParams(
@@ -15,17 +9,7 @@ export const getAllProducts = async (searchParamsPromise) => {
       )
     ).toString();
 
-    const res = await axios.get(
-      `https://8080-mazedul956-ecommercesol-vh0txgc5lvq.ws-us117.gitpod.io/api/product/get-product?${query}`,
-      {
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${session?.accessToken}`,
-        },
-      }
-    );
-
-    console.log(res)
+    const res = await axios.get(`${process.env.BACKEND_URL}/api/product/get-product?${query}`);
 
     return res.data;
   } catch (error) {
@@ -51,5 +35,28 @@ export async function getProductDetails(productId) {
   } catch (error) {
     console.error("Error fetching product:", error);
     return null; // Return null instead of crashing
+  }
+}
+
+export const createNewProduct =  async (productData, accessToken) => {
+  try {
+    const response = await axios.post(`https://8080-mazedul956-ecommercesol-vh0txgc5lvq.ws-us117.gitpod.io/api/product/upload-product`, productData, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    if (error.response) {
+      console.error("Server responded with:", error.response.data);
+      console.error("Status code:", error.response.status);
+    } else if (error.request) {
+      console.error("No response received from server:", error.request);
+    } else {
+      console.error("Error setting up request:", error.message);
+    }
   }
 }

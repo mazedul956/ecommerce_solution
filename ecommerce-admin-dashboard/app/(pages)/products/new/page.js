@@ -1,18 +1,14 @@
 // app/products/new/page.js
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import uploadImage from "@/utils/uploadImage";
 import { useSession } from "next-auth/react";
 import SideNavigation from "./SideNavigation";
 import NewHeader from "./NewHeader";
-import axios from "axios";
 import ProductForm from "./ProductForm";
 
 export default function CreateProduct() {
-  const router = useRouter();
   const [status, setStatus] = useState("draft");
-  const [loading, setLoading] = useState(false);
   const [productData, setProductData] = useState({
     productName: "",
     brandName: "",
@@ -29,31 +25,10 @@ export default function CreateProduct() {
     isFeatured: false
   });
   
-  // const [productData, setProductData] = useState({
-  //   productName: "",
-  //   description: "",
-  //   price: "",
-  //   sellingPrice: "",
-  //   costPerItem: "",
-  //   sku: "",
-  //   stock: 0,
-  //   weight: "",
-  //   status: "draft",
-  //   variants: [],
-  //   productImage: selectedImages,
-  //   // seoTitle: "",
-  //   // seoDescription: "",
-  //   category: "",
-  //   brandName: "",
-  //   tags: [],
-  //   isPublished: true,
-  //   isFeatured: false,
-  //   discount: 0,
-  // });
-
   const [tempTag, setTempTag] = useState("");
   const [errors, setErrors] = useState({});
   const [activeSection, setActiveSection] = useState("basic");
+  const [loadingImgUpload, setLoadingImgUpload] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
@@ -62,7 +37,6 @@ export default function CreateProduct() {
     if (!productData.price) newErrors.price = "Price is required";
     if (!productData.sku) newErrors.sku = "SKU is required";
     if (productData.stock < 0) newErrors.stock = "Stock cannot be negative";
-    // if (productData.productImage.length < 1) newErrors.productImage = 'At list one product image required';
     if (!productData.category) newErrors.category = "Category is required";
     if (status === "published" && !productData.description) {
       newErrors.description = "Description is required for publishing";
@@ -77,14 +51,6 @@ export default function CreateProduct() {
       variants: [...prev.variants, { option: "", values: "" }],
     }));
   };
-// Handle image selection
-const handleImageChange = (e) => {
-  const files = Array.from(e.target.files);
-  setProductData((prev) => ({
-    ...prev,
-    productImage: [...prev.productImage, ...files], // Update productImage directly
-  }));
-};
 
 // Remove selected image before upload
   const handleRemoveImage = (index) => {
@@ -95,9 +61,9 @@ const handleImageChange = (e) => {
   };
  
   // Upload all selected images
-  // Upload all selected images
 const handleUploadImages = async () => {
   try {
+    setLoadingImgUpload(true)
     const uploaded = await Promise.all(
       productData.productImage.map((image) => uploadImage(image))
     );
@@ -106,6 +72,8 @@ const handleUploadImages = async () => {
       ...prev,
       productImage: uploaded.map((img) => img.secure_url), // Store uploaded URLs
     }));
+
+    setLoadingImgUpload(false)
   } catch (error) {
     console.error("Image upload failed:", error);
   }
@@ -168,8 +136,6 @@ const handleUploadImages = async () => {
     }));
   };
 
-  const handleSubmit = () => {}
-
   const { data: session } = useSession();
 
   return (
@@ -200,9 +166,9 @@ const handleUploadImages = async () => {
           setTempTag={setTempTag}
           productData={productData}
           setProductData={setProductData}
-          handleImageChange={handleImageChange}
           handleRemoveImage={handleRemoveImage}
           handleUploadImages={handleUploadImages}
+          loadingImgUpload={loadingImgUpload}
           handleAddTag={handleAddTag}
           removeTag={removeTag}
           handleAddVariant={handleAddVariant}

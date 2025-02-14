@@ -46,7 +46,7 @@ export default function ProductFilters() {
       <select
         value={filters.category}
         onChange={(e) => handleFilterChange("category", e.target.value)}
-        className="p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600"
+        className="border rounded-md dark:bg-gray-700 dark:border-gray-600"
       >
         <option value="">All Categories</option>
         <option value="Electronics">Electronics</option>
@@ -58,7 +58,7 @@ export default function ProductFilters() {
         placeholder="Min Price"
         value={filters.minPrice}
         onChange={(e) => handleFilterChange("minPrice", e.target.value)}
-        className="p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600"
+        className="border rounded-md dark:bg-gray-700 dark:border-gray-600"
         min="0"
       />
 
@@ -67,7 +67,7 @@ export default function ProductFilters() {
         placeholder="Max Price"
         value={filters.maxPrice}
         onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
-        className="p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600"
+        className="border rounded-md dark:bg-gray-700 dark:border-gray-600"
         min="0"
       />
 
@@ -81,7 +81,7 @@ export default function ProductFilters() {
             sortOrder: sortOrder || "",
           }));
         }}
-        className="p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600"
+        className="border rounded-md dark:bg-gray-700 dark:border-gray-600"
       >
         <option value="">Sort By</option>
         <option value="createdAt_-1">Price: Low to High</option>
@@ -90,3 +90,4 @@ export default function ProductFilters() {
     </div>
   );
 }
+

@@ -17,7 +17,6 @@ export default function ProductList({ products }) {
   const [isDeleteProductModalOpen, setIsDeleteProductModalOpen] = useState(false);
   const [sortField, setSortField] = useState(null);
 
-  console.log(selectedProducts && selectedProducts[0])
   const handleBulkDelete = () => {
     setIsDeleteProductModalOpen(true);
   };

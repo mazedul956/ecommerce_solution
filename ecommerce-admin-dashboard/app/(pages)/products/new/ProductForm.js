@@ -1,10 +1,10 @@
-import React from 'react'
+"use client"
+import { useState } from "react";
 import {
     PhotoIcon,
     TrashIcon,
     PlusIcon,
 } from "@heroicons/react/24/outline";
-import { useSession } from 'next-auth/react';
 const categories = ["Electronics", "Fashion", "Home & Kitchen", "Books"];
 const brands = ["Apple", "Samsung", "Nike", "Sony"];
 
@@ -15,15 +15,53 @@ const ProductForm = ({
     tempTag, 
     setTempTag, 
     productData, 
-    setProductData,
-    handleImageChange, 
+    setProductData, 
     handleRemoveImage, 
     handleUploadImages, 
+    loadingImgUpload,
     handleAddTag,
     removeTag,
     handleAddVariant
 }) => {
+  // const handleImageChange = (e) => {
+  //   if (!e.target.files.length) return;
   
+  //   const files = Array.from(e.target.files).filter(file =>
+  //     file.type.startsWith("image/") // Ensure only images
+  //   );
+  
+  //   setProductData((prev) => ({
+  //     ...prev,
+  //     productImage: [...(prev.productImage || []), ...files], // Avoid undefined issues
+  //   }));
+  // };
+
+  // const [productImages, setProductImages] = useState([]);
+
+  const [localImages, setLocalImages] = useState([]); // Local previews before updating parent state
+
+  const handleImageChange = (e) => {
+    if (!e.target.files.length) return;
+
+    const files = Array.from(e.target.files);
+    const imagePreviews = [];
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        imagePreviews.push(reader.result);
+        if (imagePreviews.length === files.length) {
+          // Update both local preview & parent state
+          setLocalImages([...localImages, ...imagePreviews]);
+          setProductData((prev) => ({
+            ...prev,
+            productImage: [...prev.productImage, ...imagePreviews], // Ensure no overwrites
+          }));
+        }
+      };
+    });
+  };
 
   return (
     <div className="lg:col-span-3 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm dark:shadow-gray-900 transition-colors">
@@ -297,10 +335,11 @@ const ProductForm = ({
                 </label>
               </div>
               <div className="grid grid-cols-4 gap-4">
-                {productData.productImage.map((image, index) => (
+                {productData.productImage.map((image, index) => {
+                  return(
                   <div key={index} className="relative group">
                     <img
-                      src={URL.createObjectURL(image)}
+                      src={image}
                       alt={`Product ${index + 1}`}
                       className="rounded-lg h-32 w-full object-cover"
                     />
@@ -311,15 +350,18 @@ const ProductForm = ({
                       <TrashIcon className="h-5 w-5 text-red-600" />
                     </button>
                   </div>
-                ))}
+                )})}
               </div>
               <button
                 onClick={handleUploadImages}
                 className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                // disabled={loading}
+                disabled={loadingImgUpload}
               >
                 Upload
               </button>
+              <div className="text-xs text-red-600">
+                Once uploaded, images can only be delete from the library.
+              </div>
             </div>
           )}
 
