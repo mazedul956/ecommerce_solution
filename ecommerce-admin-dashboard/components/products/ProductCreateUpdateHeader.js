@@ -37,7 +37,7 @@ const ProductCreateUpdateHeader = ({ productData, validateForm, isEditPage}) => 
         <ArrowLeftIcon className="h-5 w-5 mr-2" />
         Back to Products
       </Link>
-      {isEditPage ? (<button className={`px-6 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700`}>Update</button>): (
+      {isEditPage ? (<button className={`px-6 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700`}>Update product</button>): (
         <div className="flex gap-4">
         <select
           value={status}

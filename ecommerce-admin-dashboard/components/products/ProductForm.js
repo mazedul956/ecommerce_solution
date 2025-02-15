@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     PhotoIcon,
     TrashIcon,
@@ -11,27 +11,32 @@ import ProductCreateUpdateHeader from "./ProductCreateUpdateHeader";
 const categories = ["Electronics", "Fashion", "Home & Kitchen", "Books"];
 const brands = ["Apple", "Samsung", "Nike", "Sony"];
 
-const ProductForm = () => {
+const ProductForm = ({product, isEditPage}) => {
+
   const [tempTag, setTempTag] = useState("");
   const [loadingImgUpload, setLoadingImgUpload] = useState(false);
   const [activeSection, setActiveSection] = useState("basic");
   const [productData, setProductData] = useState({
-    productName: "",
-    brandName: "",
-    category: "",
+    productName: product ? product.productName : "",
+    brandName: product ? product.brandName : "",
+    category: product ? product.category : "",
     productImage: [],
-    description: "",
-    price: 0,
-    sellingPrice: 0,
-    stock: 0,
-    sku: "",
-    discount: 0,
+    description: product ? product.description : "",
+    price: product ? product.price : 0,
+    sellingPrice: product ? product.sellingPrice : 0,
+    stock: product ? product.stock : 0,
+    sku: product ? product.sku : "",
+    discount: product ? product.discount : 0,
     tags: [],
-    isPublished: false,
-    isFeatured: false
+    isPublished: product ? product.isPublished : false,
+    isFeatured: product ? product.isFeatured : false
   });
   const [localImages, setLocalImages] = useState([]); // Local previews before updating parent state
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+
+  }, [productData])
 
   const validateForm = () => {
     const newErrors = {};
@@ -124,6 +129,7 @@ const handleUploadImages = async () => {
       <ProductCreateUpdateHeader
         productData={productData}
         validateForm={validateForm}
+        isEditPage={isEditPage}
       />
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       {/* Navigation */}

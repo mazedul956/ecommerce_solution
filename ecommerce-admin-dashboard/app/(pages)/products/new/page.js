@@ -1,11 +1,6 @@
 // app/products/new/page.js
 "use client";
-import { useState } from "react";
-import uploadImage from "@/utils/uploadImage";
-
-import SideNavigation from "../../../../components/products/SideNavigation";
 import ProductForm from "../../../../components/products/ProductForm";
-import ProductCreateUpdateHeader from "@/components/products/ProductCreateUpdateHeader";
 
 export default function CreateProduct() {
   // const handleDeleteImage = async (publicId, deleteToken) => {
@@ -48,11 +43,7 @@ export default function CreateProduct() {
   //   }
   // };
 
-
-  
-  const productData = {}
   return (
-    
         <ProductForm />
   );
 }
