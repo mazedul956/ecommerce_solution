@@ -11,6 +11,7 @@ export default async function EditProduct({params}) {
         <ProductForm
           product={data}
           isEditPage={true}
+          productId={productId}
         />
   );
 }

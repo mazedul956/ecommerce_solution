@@ -21,7 +21,7 @@ router.post("/update-user",authToken,updateUser)
 //product routes
 router.post("/product/upload-product",authToken,uploadProduct)
 router.get("/product/get-product", getAllProducts)
-router.patch("/product/update-product/:productId",authToken,updateProduct)
+router.patch("/product/update-product/:productId", authToken, updateProduct)
 router.get("/product/get-categoryProduct",getProductsByCategory)
 router.post("/product/category-product",getCategoryWiseProducts)
 router.get("/product/product-details/:productId",singleProductDetails)

@@ -4,16 +4,16 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; 
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { createNewProduct } from "@/lib/productAction";
+import { createNewProduct, updateProduct } from "@/lib/productAction";
 import { useSession } from "next-auth/react";
 
-const ProductCreateUpdateHeader = ({ productData, validateForm, isEditPage}) => {
+const ProductCreateUpdateHeader = ({ productData, validateForm, isEditPage, productId}) => {
   const { data: session } = useSession();
   const [status, setStatus] = useState("draft");
   const [loading, setLoading] = useState(false);
   const router = useRouter(); 
 
-  const handleSubmit = async (e) => {
+  const handleSubmitCreate = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
@@ -22,6 +22,24 @@ const ProductCreateUpdateHeader = ({ productData, validateForm, isEditPage}) => 
     const products = await createNewProduct(productData, session?.accessToken)
 
     setLoading(false); 
+    
+    if(products?.success) {
+      router.push("/products");
+    }
+  };
+
+  const handleSubmitUpdate = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    setLoading(true); 
+    console.log(loading)
+
+    const products = await updateProduct(productData, productId, session?.accessToken)
+
+    setLoading(false); 
+    console.log(loading)
+
     
     if(products?.success) {
       router.push("/products");
@@ -37,7 +55,19 @@ const ProductCreateUpdateHeader = ({ productData, validateForm, isEditPage}) => 
         <ArrowLeftIcon className="h-5 w-5 mr-2" />
         Back to Products
       </Link>
-      {isEditPage ? (<button className={`px-6 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700`}>Update product</button>): (
+      {isEditPage ? (
+        <button 
+          onClick={handleSubmitUpdate} 
+          disabled={loading} 
+          className={`px-6 py-2 rounded-lg text-white ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+          }`}
+        >
+          Update product
+        </button>
+      ): (
         <div className="flex gap-4">
         <select
           value={status}
@@ -48,7 +78,7 @@ const ProductCreateUpdateHeader = ({ productData, validateForm, isEditPage}) => 
           <option value="published">Published</option>
         </select>
         <button
-          onClick={handleSubmit}
+          onClick={handleSubmitCreate}
           disabled={loading} 
           className={`px-6 py-2 rounded-lg text-white ${
             loading

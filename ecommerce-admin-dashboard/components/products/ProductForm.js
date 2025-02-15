@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     PhotoIcon,
     TrashIcon,
@@ -8,35 +8,32 @@ import {
 import { useSession } from "next-auth/react";
 import SideNavigation from "./SideNavigation";
 import ProductCreateUpdateHeader from "./ProductCreateUpdateHeader";
+import uploadImage from "@/utils/uploadImage";
 const categories = ["Electronics", "Fashion", "Home & Kitchen", "Books"];
 const brands = ["Apple", "Samsung", "Nike", "Sony"];
 
-const ProductForm = ({product, isEditPage}) => {
+const ProductForm = ({product, isEditPage, productId}) => {
 
   const [tempTag, setTempTag] = useState("");
   const [loadingImgUpload, setLoadingImgUpload] = useState(false);
   const [activeSection, setActiveSection] = useState("basic");
   const [productData, setProductData] = useState({
-    productName: product ? product.productName : "",
-    brandName: product ? product.brandName : "",
-    category: product ? product.category : "",
-    productImage: [],
-    description: product ? product.description : "",
-    price: product ? product.price : 0,
-    sellingPrice: product ? product.sellingPrice : 0,
-    stock: product ? product.stock : 0,
-    sku: product ? product.sku : "",
-    discount: product ? product.discount : 0,
+    productName: product?.productName || "",
+    brandName: product?.brandName || "",
+    category: product?.category || "",
+    productImage: product?.productImage || [],
+    description: product?.description || "",
+    price: product?.price || 0,
+    sellingPrice: product?.sellingPrice || 0,
+    stock: product?.stock || 0,
+    sku: product?.sku || "",
+    discount: product?.discount || 0,
     tags: [],
-    isPublished: product ? product.isPublished : false,
-    isFeatured: product ? product.isFeatured : false
+    isPublished: product?.isPublished || false,
+    isFeatured: product?.isFeatured || false,
   });
   const [localImages, setLocalImages] = useState([]); // Local previews before updating parent state
   const [errors, setErrors] = useState({});
-
-  useEffect(() => {
-
-  }, [productData])
 
   const validateForm = () => {
     const newErrors = {};
@@ -50,27 +47,7 @@ const ProductForm = ({product, isEditPage}) => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  const handleImageChange = (e) => {
-    if (!e.target.files.length) return;
-
-    const files = Array.from(e.target.files);
-    const imagePreviews = [];
-
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        imagePreviews.push(reader.result);
-        if (imagePreviews.length === files.length) {
-          setLocalImages([...localImages, ...imagePreviews]);
-          setProductData((prev) => ({
-            ...prev,
-            productImage: [...prev.productImage, ...imagePreviews], // Ensure no overwrites
-          }));
-        }
-      };
-    });
-  };
+  
 
   const handleAddTag = () => {
     if (tempTag.trim() && !productData.tags.includes(tempTag.trim())) {
@@ -96,32 +73,55 @@ const ProductForm = ({product, isEditPage}) => {
     }));
   };
 
-  // Remove selected image before upload
-  const handleRemoveImage = (index) => {
-    setProductData((prev) => ({
-      ...prev,
-      productImage: prev.productImage.filter((_, i) => i !== index), // Remove image by index
-    }));
+  const handleImageChange = (e) => {
+    if (!e.target.files.length) return;
+
+    const files = Array.from(e.target.files);
+    const imagePreviews = [];
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        imagePreviews.push(reader.result);
+        if (imagePreviews.length === files.length) {
+          setLocalImages([...localImages, ...imagePreviews]);
+          setProductData((prev) => ({
+            ...prev,
+            productImage: [...prev.productImage, ...imagePreviews], // Ensure no overwrites
+          }));
+        }
+      };
+    });
   };
+
+  // Remove selected image before upload
+  const handleRemoveImage = useCallback((index) => {
+    setProductData(prev => ({
+      ...prev,
+      productImage: prev.productImage.filter((_, i) => i !== index)
+    }));
+  }, []);
  
   // Upload all selected images
-const handleUploadImages = async () => {
-  try {
-    setLoadingImgUpload(true)
-    const uploaded = await Promise.all(
-      productData.productImage.map((image) => uploadImage(image))
-    );
-
-    setProductData((prev) => ({
-      ...prev,
-      productImage: uploaded.map((img) => img.secure_url), // Store uploaded URLs
-    }));
-
-    setLoadingImgUpload(false)
-  } catch (error) {
-    console.error("Image upload failed:", error);
-  }
-};
+  const handleUploadImages = async () => {
+    try {
+      setLoadingImgUpload(true);
+      const uploadedImages = await Promise.all(
+        productData.productImage.map(uploadImage) // Call API only once per image
+      );
+  
+      setProductData(prev => ({
+        ...prev,
+        productImage: uploadedImages.map(img => img.secure_url) // Store secure URLs
+      }));
+    } catch (error) {
+      console.error("Image upload failed:", error);
+    } finally {
+      setLoadingImgUpload(false);
+    }
+  };
+  
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -130,6 +130,7 @@ const handleUploadImages = async () => {
         productData={productData}
         validateForm={validateForm}
         isEditPage={isEditPage}
+        productId={productId}
       />
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       {/* Navigation */}
