@@ -3,10 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; 
-import { createNewProduct } from "@/lib/productAction";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { createNewProduct } from "@/lib/productAction";
+import { useSession } from "next-auth/react";
 
-const NewHeader = ({ status, setStatus, session, productData, validateForm}) => {
+const ProductCreateUpdateHeader = ({ productData, validateForm, isEditPage}) => {
+  const { data: session } = useSession();
+  const [status, setStatus] = useState("draft");
   const [loading, setLoading] = useState(false);
   const router = useRouter(); 
 
@@ -34,7 +37,8 @@ const NewHeader = ({ status, setStatus, session, productData, validateForm}) => 
         <ArrowLeftIcon className="h-5 w-5 mr-2" />
         Back to Products
       </Link>
-      <div className="flex gap-4">
+      {isEditPage ? (<button className={`px-6 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700`}>Update</button>): (
+        <div className="flex gap-4">
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
@@ -54,9 +58,11 @@ const NewHeader = ({ status, setStatus, session, productData, validateForm}) => 
         >
           {status === "draft" ? "Save Draft" : "Publish Product"}
         </button>
-      </div>
+        </div>
+      )}
+      
     </div>
   );
 };
 
-export default NewHeader;
+export default ProductCreateUpdateHeader;

@@ -5,41 +5,46 @@ import {
     TrashIcon,
     PlusIcon,
 } from "@heroicons/react/24/outline";
+import { useSession } from "next-auth/react";
+import SideNavigation from "./SideNavigation";
+import ProductCreateUpdateHeader from "./ProductCreateUpdateHeader";
 const categories = ["Electronics", "Fashion", "Home & Kitchen", "Books"];
 const brands = ["Apple", "Samsung", "Nike", "Sony"];
 
-const ProductForm = ({
-    activeSection, 
-    errors, 
-    setErrors,
-    tempTag, 
-    setTempTag, 
-    productData, 
-    setProductData, 
-    handleRemoveImage, 
-    handleUploadImages, 
-    loadingImgUpload,
-    handleAddTag,
-    removeTag,
-    handleAddVariant
-}) => {
-  // const handleImageChange = (e) => {
-  //   if (!e.target.files.length) return;
-  
-  //   const files = Array.from(e.target.files).filter(file =>
-  //     file.type.startsWith("image/") // Ensure only images
-  //   );
-  
-  //   setProductData((prev) => ({
-  //     ...prev,
-  //     productImage: [...(prev.productImage || []), ...files], // Avoid undefined issues
-  //   }));
-  // };
-
-  // const [productImages, setProductImages] = useState([]);
-
+const ProductForm = () => {
+  const [tempTag, setTempTag] = useState("");
+  const [loadingImgUpload, setLoadingImgUpload] = useState(false);
+  const [activeSection, setActiveSection] = useState("basic");
+  const [productData, setProductData] = useState({
+    productName: "",
+    brandName: "",
+    category: "",
+    productImage: [],
+    description: "",
+    price: 0,
+    sellingPrice: 0,
+    stock: 0,
+    sku: "",
+    discount: 0,
+    tags: [],
+    isPublished: false,
+    isFeatured: false
+  });
   const [localImages, setLocalImages] = useState([]); // Local previews before updating parent state
+  const [errors, setErrors] = useState({});
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!productData.productName)
+      newErrors.productName = "Product title is required";
+    if (!productData.price) newErrors.price = "Price is required";
+    if (!productData.sku) newErrors.sku = "SKU is required";
+    if (productData.stock < 0) newErrors.stock = "Stock cannot be negative";
+    if (!productData.category) newErrors.category = "Category is required";
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
   const handleImageChange = (e) => {
     if (!e.target.files.length) return;
 
@@ -52,7 +57,6 @@ const ProductForm = ({
       reader.onload = () => {
         imagePreviews.push(reader.result);
         if (imagePreviews.length === files.length) {
-          // Update both local preview & parent state
           setLocalImages([...localImages, ...imagePreviews]);
           setProductData((prev) => ({
             ...prev,
@@ -63,7 +67,70 @@ const ProductForm = ({
     });
   };
 
+  const handleAddTag = () => {
+    if (tempTag.trim() && !productData.tags.includes(tempTag.trim())) {
+      setProductData((prev) => ({
+        ...prev,
+        tags: [...prev.tags, tempTag.trim()],
+      }));
+      setTempTag("");
+    }
+  };
+
+  const removeTag = (tagToRemove) => {
+    setProductData((prev) => ({
+      ...prev,
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
+    }));
+  };
+
+  const handleAddVariant = () => {
+    setProductData((prev) => ({
+      ...prev,
+      variants: [...prev.variants, { option: "", values: "" }],
+    }));
+  };
+
+  // Remove selected image before upload
+  const handleRemoveImage = (index) => {
+    setProductData((prev) => ({
+      ...prev,
+      productImage: prev.productImage.filter((_, i) => i !== index), // Remove image by index
+    }));
+  };
+ 
+  // Upload all selected images
+const handleUploadImages = async () => {
+  try {
+    setLoadingImgUpload(true)
+    const uploaded = await Promise.all(
+      productData.productImage.map((image) => uploadImage(image))
+    );
+
+    setProductData((prev) => ({
+      ...prev,
+      productImage: uploaded.map((img) => img.secure_url), // Store uploaded URLs
+    }));
+
+    setLoadingImgUpload(false)
+  } catch (error) {
+    console.error("Image upload failed:", error);
+  }
+};
+
   return (
+    <div className="p-6 max-w-6xl mx-auto">
+      {/* Header */}
+      <ProductCreateUpdateHeader
+        productData={productData}
+        validateForm={validateForm}
+      />
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      {/* Navigation */}
+      <SideNavigation
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+        />
     <div className="lg:col-span-3 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm dark:shadow-gray-900 transition-colors">
           {activeSection === "basic" && (
             <div className="space-y-6">
@@ -455,6 +522,8 @@ const ProductForm = ({
             </div>
           )} */}
         </div>
+      </div>
+      </div>
   )
 }
 
