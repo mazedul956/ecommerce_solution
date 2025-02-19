@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import SideNavigation from "./SideNavigation";
 import ProductCreateUpdateHeader from "./ProductCreateUpdateHeader";
 import uploadImage from "@/utils/uploadImage";
+import AssetLibrary from "../AssetsLibrary";
 const categories = ["Electronics", "Fashion", "Home & Kitchen", "Books"];
 const brands = ["Apple", "Samsung", "Nike", "Sony"];
 
@@ -33,6 +34,7 @@ const ProductForm = ({product, isEditPage, productId}) => {
     isFeatured: product?.isFeatured || false,
   });
   const [localImages, setLocalImages] = useState([]); // Local previews before updating parent state
+  const [showLibrary, setShowLibrary] = useState(false)
   const [errors, setErrors] = useState({});
 
   const validateForm = () => {
@@ -408,6 +410,15 @@ const ProductForm = ({product, isEditPage, productId}) => {
                   </p>
                 </label>
               </div>
+
+              {/* Select from Library Button */}
+              <button
+                onClick={() => setShowLibrary(true)}
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg"
+              >
+                Select from Assets Library
+              </button>
+
               <div className="grid grid-cols-4 gap-4">
                 {productData.productImage.map((image, index) => {
                   return(
@@ -436,6 +447,17 @@ const ProductForm = ({product, isEditPage, productId}) => {
               <div className="text-xs text-red-600">
                 Once uploaded, images can only be delete from the library.
               </div>
+
+              {showLibrary && (
+              <AssetLibrary
+                onSelect={(imageUrl) => {
+                  setProductData((prev) => ({ ...prev, productImage: [...prev.productImage, imageUrl] }));
+                  // setShowLibrary(false);
+                }}
+                onClose={() => setShowLibrary(false)}
+                isOpen={showLibrary}
+              />
+            )}
             </div>
           )}
 
