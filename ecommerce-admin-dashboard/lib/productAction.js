@@ -60,3 +60,26 @@ export const createNewProduct =  async (productData, accessToken) => {
     }
   }
 }
+
+export const updateProduct =  async (productData, productId, accessToken) => {
+  try {
+    const response = await axios.patch(`https://8080-mazedul956-ecommercesol-vh0txgc5lvq.ws-us117.gitpod.io/api/product/update-product/${productId}`, productData, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    if (error.response) {
+      console.error("Server responded with:", error.response.data);
+      console.error("Status code:", error.response.status);
+    } else if (error.request) {
+      console.error("No response received from server:", error.request);
+    } else {
+      console.error("Error setting up request:", error.message);
+    }
+  }
+}

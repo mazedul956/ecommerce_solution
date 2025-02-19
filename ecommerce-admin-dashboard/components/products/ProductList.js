@@ -179,7 +179,7 @@ export default function ProductList({ products }) {
               </td>
               <td className="px-6 py-4">
                 <div className="flex items-center space-x-3">
-                  <Link href={`/products/${product.id}/edit`} className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+                  <Link href={`/products/edit/${product._id}`} className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
                     <PencilSquareIcon className="h-5 w-5" />
                   </Link>
                   <button className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300">

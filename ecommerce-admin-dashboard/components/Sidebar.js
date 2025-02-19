@@ -9,6 +9,7 @@ import {
   PlusIcon,
   XMarkIcon,
   Bars3Icon,
+  BuildingLibraryIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -24,6 +25,7 @@ export default function Sidebar() {
     { name: 'Categories', href: '/categories', icon: FolderIcon },
     { name: 'Orders', href: '/orders', icon: ShoppingCartIcon },
     { name: 'Customers', href: '/customers', icon: UserGroupIcon },
+    { name: 'Assets Library', href: '/library', icon: BuildingLibraryIcon },
     { name: 'Analytics', href: '/analytics', icon: ChartBarIcon },
     { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
   ];

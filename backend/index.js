@@ -1,10 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
-require('dotenv').config()
 const connectDB = require('./config/db')
 const router = require('./routes')
-
 
 const app = express()
 const allowedOrigins = [
@@ -15,7 +14,7 @@ const allowedOrigins = [
   const corsOptions = {
     origin: allowedOrigins,
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   };
 app.use(cors(corsOptions))

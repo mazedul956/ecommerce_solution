@@ -125,18 +125,6 @@ async function updateProductController(req, res) {
       });
     }
 
-    // Check if the SKU is being updated and if the new SKU already exists
-    if (sku && sku !== existingProduct.sku) {
-      const productWithSameSku = await productModel.findOne({ sku });
-      if (productWithSameSku) {
-        return res.status(400).json({
-          message: "Product with this SKU already exists.",
-          error: true,
-          success: false,
-        });
-      }
-    }
-
     // Prepare the updated product data
     const updatedData = {
       ...(productName && { productName }),

@@ -212,13 +212,7 @@ const Header = () => {
                 </Menu.Item>
                 <Menu.Item>
                   {({ active }) => (
-                    <button
-                      className={`${
-                        active ? 'bg-gray-100 dark:bg-gray-700' : ''
-                      } w-full px-4 py-2 text-left text-sm`}
-                    >
-                      Sign Out
-                    </button>
+                    <SignOutButton className={`${active ? "bg-gray-100 dark:bg-gray-700" : ""}`} />
                   )}
                 </Menu.Item>
               </Menu.Items>
