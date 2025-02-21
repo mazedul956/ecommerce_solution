@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function Filters({ entity, filterOptions, existingFilters }) {
   const router = useRouter();
@@ -18,6 +17,15 @@ export default function Filters({ entity, filterOptions, existingFilters }) {
     });
     return initialFilters;
   });
+
+  // Function to clear all filters
+  const clearFilters = () => {
+    const clearedFilters = {};
+    filterOptions.forEach(({ key }) => {
+      clearedFilters[key] = ""; // Reset each filter to an empty string
+    });
+    setFilters(clearedFilters);
+  };
 
 
   useEffect(() => {
@@ -40,7 +48,7 @@ export default function Filters({ entity, filterOptions, existingFilters }) {
       {filterOptions.map(({ key, type, placeholder, options }) => (
         <div key={key} className="flex flex-col">
           {type === "text" && (
-            <Input
+            <input
               placeholder={placeholder}
               value={filters[key]}
               onChange={(e) => handleFilterChange(key, e.target.value)}
@@ -48,21 +56,32 @@ export default function Filters({ entity, filterOptions, existingFilters }) {
             />
           )}
           {type === "select" && (
-            <Select onValueChange={(value) => handleFilterChange(key, value)} value={filters[key] || undefined}>
-              <SelectTrigger>
-                <SelectValue placeholder={placeholder} />
-              </SelectTrigger>
-              <SelectContent>
-                {options.map((option) => (
-                  <SelectItem key={option.value} value={option.value || ""}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <select
+              value={filters[key] || ""}
+              onChange={(e) => handleFilterChange(key, e.target.value)}
+              className="border rounded-md dark:bg-gray-700 dark:border-gray-600"
+            >
+              <option value="">{placeholder}</option>
+              {options.map((option) => (
+                <option key={option.value} value={option.value || ""}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          )}
+          {type === "number" && (
+            <input
+              placeholder={placeholder}
+              value={filters[key]}
+              onChange={(e) => handleFilterChange(key, e.target.value)}
+              className="border rounded-md dark:bg-gray-700 dark:border-gray-600"
+            />
           )}
         </div>
       ))}
+      <Button onClick={clearFilters}>
+        Clear
+      </Button>
     </Card>
   );
 }

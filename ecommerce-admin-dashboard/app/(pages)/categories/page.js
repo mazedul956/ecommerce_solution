@@ -1,7 +1,9 @@
 // app/categories/page.js
 import axios from 'axios';
 import CategoriesPageWrapper from './CategoriesPageWrapper';
-import Filters from './Filters';
+import Filters from '../../../components/Filters';
+import PageHeader from '@/components/PageHeader';
+import { PlusIcon } from 'lucide-react';
 
 async function getCategories(searchParamsPromise) {
   try {
@@ -26,8 +28,7 @@ export default async function CategoriesPage({ searchParams }) {
 
   const filterOptions = [
     { key: "search", type: "text", placeholder: "Search categories..." },
-    { key: "isActive", type: "select", placeholder: "Status", options: [
-        { value: "all", label: "All" },
+    { key: "isActive", type: "select", placeholder: "All Status", options: [
         { value: "true", label: "Active" },
         { value: "false", label: "Inactive" },
       ]
@@ -36,13 +37,12 @@ export default async function CategoriesPage({ searchParams }) {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Categories Management</h1>
+      <PageHeader title="Categories Management" actionHref="/categories/new" actionText="Add Category" Icon={PlusIcon}/>
       <Filters entity="categories" filterOptions={filterOptions} existingFilters={searchParams} />
       <CategoriesPageWrapper
         categories={categories}
         pagination={pagination}
         currentPage={pagination?.page}
-        filters={searchParams}
       />
     </div>
   );
