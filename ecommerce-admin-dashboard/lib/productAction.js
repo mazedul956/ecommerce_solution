@@ -50,6 +50,7 @@ export const createNewProduct =  async (productData, accessToken) => {
 
     return response.data
   } catch (error) {
+    console.log(error)
     if (error.response) {
       console.error("Server responded with:", error.response.data);
       console.error("Status code:", error.response.status);

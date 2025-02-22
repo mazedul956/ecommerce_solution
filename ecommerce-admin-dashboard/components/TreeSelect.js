@@ -1,37 +1,86 @@
-// components/ui/TreeSelect.js
 'use client';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { useState } from 'react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 
-export function TreeSelect({ options, onChange, maxDepth, ...props }) {
-  const renderOptions = (items, depth = 0) => 
+export function TreeSelect({ options, onChange, value }) {
+  const [expanded, setExpanded] = useState(new Set());
+  const [open, setOpen] = useState(false);
+
+  // Build hierarchical categories
+  const buildTree = (items) => {
+    const map = new Map();
+    const roots = [];
+
+    items.forEach((item) => map.set(item._id, { ...item, children: [] }));
+    items.forEach((item) => {
+      if (item.path) {
+        const parentId = item.path.split('/').pop();
+        const parent = map.get(parentId);
+        if (parent) {
+          parent.children.push(map.get(item._id));
+        }
+      } else {
+        roots.push(map.get(item._id));
+      }
+    });
+
+    return roots;
+  };
+
+  const toggleExpand = (id) => {
+    setExpanded((prev) => {
+      const newSet = new Set(prev);
+      newSet.has(id) ? newSet.delete(id) : newSet.add(id);
+      return newSet;
+    });
+  };
+
+  const handleSelect = (category) => {
+    onChange(category._id);
+    setOpen(false);
+  };
+
+  const renderOptions = (items) =>
     items.map((item) => (
-      <div key={item.value}>
-        <SelectItem 
-          value={item.value} 
-          disabled={depth >= maxDepth}
-          className={`pl-${depth * 4}`}
+      <div key={item._id}>
+        <div
+          className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer"
+          onClick={() => handleSelect(item)}
         >
-          {item.label}
-        </SelectItem>
-        {item.children && renderOptions(item.children, depth + 1)}
+          {item.children.length > 0 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleExpand(item._id);
+              }}
+              className="p-1 hover:bg-gray-200 rounded"
+            >
+              {expanded.has(item._id) ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+            </button>
+          )}
+          <span>{item.name}</span>
+        </div>
+        {item.children.length > 0 && expanded.has(item._id) && (
+          <div className="pl-4">{renderOptions(item.children)}</div>
+        )}
       </div>
     ));
 
+  const treeData = buildTree(options);
+  const selectedCategory = options.find((c) => c._id === value);
+
   return (
-    <Select onValueChange={onChange} {...props}>
-      <SelectTrigger>
-        <SelectValue placeholder="Select parent category" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value={null}>Root Category</SelectItem>
-        {renderOptions(options)}
-      </SelectContent>
-    </Select>
+    <div>
+      <div
+        className="border p-2 rounded cursor-pointer flex justify-between items-center"
+        onClick={() => setOpen(!open)}
+      >
+        {selectedCategory ? selectedCategory.name : 'Select Parent Category'}
+        <ChevronDown className="h-4 w-4" />
+      </div>
+      {open && (
+        <div className="border mt-1 p-2 rounded bg-white shadow">{renderOptions(treeData)}</div>
+      )}
+    </div>
   );
 }
