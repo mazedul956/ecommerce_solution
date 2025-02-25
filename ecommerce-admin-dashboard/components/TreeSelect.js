@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
@@ -36,7 +37,7 @@ export function TreeSelect({ options, onChange, value }) {
   };
 
   const handleSelect = (category) => {
-    onChange(category._id);
+    onChange(category ? category._id : null);
     setOpen(false);
   };
 
@@ -45,17 +46,25 @@ export function TreeSelect({ options, onChange, value }) {
       <div key={item._id}>
         <div
           className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer"
-          onClick={() => handleSelect(item)}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleSelect(item);
+          }}
         >
           {item.children.length > 0 && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                e.preventDefault(); 
                 toggleExpand(item._id);
               }}
               className="p-1 hover:bg-gray-200 rounded"
             >
-              {expanded.has(item._id) ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+              {expanded.has(item._id) ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
             </button>
           )}
           <span>{item.name}</span>
@@ -75,11 +84,28 @@ export function TreeSelect({ options, onChange, value }) {
         className="border p-2 rounded cursor-pointer flex justify-between items-center"
         onClick={() => setOpen(!open)}
       >
-        {selectedCategory ? selectedCategory.name : 'Select Parent Category'}
+        {selectedCategory ? selectedCategory.name : 'Root Category'}
         <ChevronDown className="h-4 w-4" />
       </div>
       {open && (
-        <div className="border mt-1 p-2 rounded bg-white shadow">{renderOptions(treeData)}</div>
+        <div
+          className="border mt-1 p-2 rounded bg-white shadow"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Root Parent Option */}
+          <div
+            className="p-2 hover:bg-gray-100 rounded cursor-pointer font-semibold"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSelect(null);
+            }}
+          >
+            Root Category
+          </div>
+
+          {/* Other Categories Below */}
+          {renderOptions(treeData)}
+        </div>
       )}
     </div>
   );

@@ -7,7 +7,7 @@ const getAllCategoriesByAdmin = async (req, res) => {
     const { search, isActive, sortBy, sortOrder, page, limit } = req.query;
 
     // Build the query
-    const query = {}; // Exclude soft-deleted categories
+    const query = {isDeleted: false}; // Exclude soft-deleted categories
     if (isActive !== undefined) {
       query.isActive = isActive === 'true'; // Convert string to boolean
     }
@@ -21,6 +21,8 @@ const getAllCategoriesByAdmin = async (req, res) => {
     const sort = {};
     if (sortBy) {
       sort[sortBy] = sortOrder === 'desc' ? -1 : 1; // Default to ascending order
+    } else {
+      sort.createdAt = -1;
     }
 
     // Pagination

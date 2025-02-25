@@ -10,17 +10,25 @@ import { TreeSelect } from '@/components/TreeSelect';
 import { FileUpload } from '@/components/FileUpload';
 import { createCategory } from '@/actions/categoryAction';
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function NewCategoryForm() {
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm();
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
   const {data: session} = useSession()
+
+  const router = useRouter();
 
   useEffect(() => {
     async function getCategories() {
-      const res = await fetch(`https://8080-mazedul956-ecommercesol-vh0txgc5lvq.ws-us117.gitpod.io/api/category/parent`);
-      const { data } = await res.json();
-      setCategories(data);
+      try {
+        const res = await fetch(`https://8080-mazedul956-ecommercesol-vh0txgc5lvq.ws-us118.gitpod.io/api/category/parent`);
+        const { data } = await res.json();
+        setCategories(data);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
     }
     getCategories();
   }, []);
@@ -45,14 +53,18 @@ export default function NewCategoryForm() {
     }
   }, [name, setValue]);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data, event) => {
     event?.preventDefault();
     const formData = { ...data, parent: data.parent || null };
+    console.log(formData)
+    setLoading(true)
 
     const result = await createCategory(formData, session?.accessToken)
-    console.log('Form Data:', formData);
-    console.log('Result:', result);
-    // Handle form submission logic here
+    
+    if (result.success) {
+      router.push("/categories");
+      setLoading(false)
+    }
   };
 
   return (
@@ -115,7 +127,7 @@ export default function NewCategoryForm() {
         </div>
 
         <div className="border-t pt-6">
-          <Button type="submit" className="w-full md:w-auto">
+          <Button type="submit" className="w-full md:w-auto" disabled={loading}>
             Create Category
           </Button>
         </div>

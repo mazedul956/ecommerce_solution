@@ -11,7 +11,7 @@ const updateCategory = async (req, res) => {
     }
 
     const { id } = req.params; // Category ID to update
-    const { name, description, parent, isActive, image, order, metadata } = req.body;
+    const { name, description, parent, isActive, image } = req.body;
 
     // Find the category to update
     const category = await Category.findById(id);
@@ -59,8 +59,8 @@ const updateCategory = async (req, res) => {
     category.parent = parent || category.parent;
     category.isActive = isActive !== undefined ? isActive : category.isActive;
     category.image = image || category.image;
-    category.order = order || category.order;
-    category.metadata = metadata || category.metadata;
+    // category.order = order || category.order;
+    // category.metadata = metadata || category.metadata;
 
     // Save the updated category
     await category.save();

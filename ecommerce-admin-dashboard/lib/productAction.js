@@ -40,7 +40,7 @@ export async function getProductDetails(productId) {
 
 export const createNewProduct =  async (productData, accessToken) => {
   try {
-    const response = await axios.post(`https://8080-mazedul956-ecommercesol-vh0txgc5lvq.ws-us117.gitpod.io/api/product/upload-product`, productData, {
+    const response = await axios.post(`https://8080-mazedul956-ecommercesol-vh0txgc5lvq.ws-us118.gitpod.io/api/product/upload-product`, productData, {
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
@@ -64,7 +64,7 @@ export const createNewProduct =  async (productData, accessToken) => {
 
 export const updateProduct =  async (productData, productId, accessToken) => {
   try {
-    const response = await axios.patch(`https://8080-mazedul956-ecommercesol-vh0txgc5lvq.ws-us117.gitpod.io/api/product/update-product/${productId}`, productData, {
+    const response = await axios.patch(`https://8080-mazedul956-ecommercesol-vh0txgc5lvq.ws-us118.gitpod.io/api/product/update-product/${productId}`, productData, {
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
