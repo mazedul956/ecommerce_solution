@@ -33,6 +33,10 @@ const categorySchema = new Schema(
       index: true,
       default: '',
     },
+    pathNames: {
+      type: String,
+      default: '',
+    },
     isActive: {
       type: Boolean,
       default: true,
@@ -73,29 +77,34 @@ categorySchema.pre('save', async function (next) {
       current = await this.model('Category').findById(current.parent);
       if (!current) throw new Error('Invalid parent reference in hierarchy.');
       depth++;
-      if (depth >= 5) throw new Error('Max category depth exceeded (5 levels).');
+      if (depth >= 3) throw new Error('Max category depth exceeded (3 levels).');
     }
 
     // Update materialized path
     this.path = `${parent.path ? `${parent.path}/` : ''}${parent._id}`;
+
+    // Update pathNames
+    this.pathNames = `${parent.pathNames ? `${parent.pathNames} / ` : ''}${parent.name}`;
   } else {
     // Root category
     this.path = '';
+    this.pathNames = '';
   }
 
   next();
 });
 
-categorySchema.post("save", async function (doc, next) {
-  if(doc.parent) {
+// Middleware to update parent's children array
+categorySchema.post('save', async function (doc, next) {
+  if (doc.parent) {
     await this.model('Category').findByIdAndUpdate(
       doc.parent,
-      {$addToSet: {children: doc._id}},
-      {new: true}
-    )
+      { $addToSet: { children: doc._id } },
+      { new: true }
+    );
   }
-  next()
-})
+  next();
+});
 
 const Category = model('Category', categorySchema);
 module.exports = Category;

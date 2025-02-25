@@ -8,7 +8,7 @@ const {createOrder, deleteOrder, getOrderById, getOrdersByAdmin, getOrdersByUser
 const { addToCart, viewCart, deleteCartProduct } = require('../controller/cart')
 const {allUsers, updateUser, userDetails, logoutUser, userSignIn, userSignUp} = require("../controller/user")
 const { getAllAssets, deleteAssets } = require('../controller/assets/assetsController')
-const {createCategory, getAllCategoriesByAdmin, updateCategory, deleteCategory} = require("../controller/category")
+const {createCategory, getAllCategoriesByAdmin, updateCategory, deleteCategory, getParentCategories, getCategoryById} = require("../controller/category")
 
 // users routes
 router.post("/signup",userSignUp)
@@ -50,6 +50,8 @@ router.delete("/assets", deleteAssets)
 // category routes
 router.post("/category", authToken, createCategory);
 router.get("/category", getAllCategoriesByAdmin);
+router.get("/category/parent", getParentCategories);
+router.get("/category/:id", getCategoryById);
 router.patch("/category/:id", authToken, updateCategory);
 router.delete("/category/:id", authToken, deleteCategory);
 

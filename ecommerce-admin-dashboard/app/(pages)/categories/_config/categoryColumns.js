@@ -6,16 +6,25 @@ export const categoryColumns = [
       header: 'Category Name',
       renderCell: (category) => (
         <div className="flex items-center gap-2">
-          <FolderIcon className="h-4 w-4" />
-          <span>{category.name}</span>
+          {/* <FolderIcon className="h-4 w-4" /> */}
+          <div className="flex flex-col">
+            <div className="font-medium">{category.name}</div>
+            <div className="text-xs text-gray-500">
+              Added: {new Date(category.createdAt).toISOString().split('T')[0]}
+            </div>
+          </div>
         </div>
       )
     },
-    { key: 'description', header: 'Description' },
     {
       key: 'parent',
       header: 'Parent Category',
-      renderCell: (category) => category.parent?.name || '–'
+      renderCell: (category) => category.pathNames || '–'
+    },
+    {
+      key: 'childrens',
+      header: 'Total Childrens',
+      renderCell: (category) => category.children.length || '–'
     },
     {
       key: 'status',
