@@ -5,11 +5,17 @@ import CategoriesTable from './CategoriesTable';
 // import BulkActions from './BulkActions';
 import Pagination from '../../../components/Pagination';
 import DeleteModal from '@/components/DeleteModal';
+import { deleteCategory } from '@/lib/categoryAction';
+import { useSession } from "next-auth/react";
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 
 export default function CategoriesPageWrapper({ categories, pagination, currentPage }) {
-
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const router = useRouter();
+
+  const {data: session} = useSession()
 
   // Handle category selection
   const toggleSelectCategory = (categoryId) => {
@@ -27,11 +33,21 @@ export default function CategoriesPageWrapper({ categories, pagination, currentP
   };
 
   // Handle delete confirmation
-  const handleDeleteCategories = () => {
-    console.log('Deleting categories:', selectedCategories);
-    // Add actual delete logic here
-    setSelectedCategories([]);
-    setIsDeleteModalOpen(false);
+  const handleDeleteCategories = async () => {
+    try {
+      for (const categoryId of selectedCategories) {
+        await deleteCategory(categoryId, session?.accessToken);
+      }
+      
+      toast.success('Categories deleted successfully!');
+
+      setSelectedCategories([]);
+      setIsDeleteModalOpen(false);
+      router.refresh();
+    } catch (error) {
+      console.log(error)
+      console.error('Error deleting categories:', error);
+    }
   };
 
   return (
