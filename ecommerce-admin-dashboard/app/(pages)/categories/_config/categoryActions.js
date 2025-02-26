@@ -4,7 +4,7 @@ export const categoryActions = (toggleSelect, onDelete) => [
     {
         key: 'edit',
         icon: PencilSquareIcon,
-        href: (category) => `/categories/${category._id}/edit`,
+        href: (category) => `/categories/edit/${category._id}`,
         iconClassName: 'text-blue-600'
       },
       {
