@@ -4,7 +4,7 @@ export const productActions = (toggleSelect, onDelete) => [
     {
       key: 'edit',
       icon: PencilSquareIcon,
-      href: (item) => `/products/${item._id}/edit`,
+      href: (item) => `/products/edit/${item._id}`,
       iconClassName: 'text-blue-600'
     },
     {

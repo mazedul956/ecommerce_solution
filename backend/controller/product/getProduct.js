@@ -3,7 +3,8 @@ const productModel = require("../../models/productModel");
 const getProductController = async (req, res) => {
     try {
         // Extract pagination and filter parameters from the request
-        const { page = 1, limit = 10, category, minPrice, maxPrice, sortBy = 'createdAt', sortOrder = -1, search } = req.query;
+        const { page = 1, limit = 10, category, minPrice, maxPrice, sortBy = 'createdAt', sortOrder = -1, search, startDate,
+            endDate } = req.query;
 
         // Build the filter object dynamically based on query parameters
         let filter = {};
@@ -27,6 +28,18 @@ const getProductController = async (req, res) => {
             filter.price = {};
             if (minPrice) filter.price.$gte = minPrice;
             if (maxPrice) filter.price.$lte = maxPrice;
+        }
+
+        // Add date range filter if startDate and endDate are provided
+        if (startDate && endDate) {
+            filter.createdAt = {
+                $gte: new Date(startDate), // Greater than or equal to startDate
+                $lte: new Date(endDate)  // Less than or equal to endDate
+            };
+        } else if (startDate) {
+            filter.createdAt = { $gte: new Date(startDate) };
+        } else if (endDate) {
+            filter.createdAt = { $lte: new Date(endDate) };
         }
 
         // Set up pagination and sorting

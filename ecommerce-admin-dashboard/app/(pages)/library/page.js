@@ -26,7 +26,7 @@ const AssetsLibrary = () => {
   // Fetch assets from Cloudinary
   const fetchAssets = async (cursor) => {
     try {
-      const res = await fetch(`https://8080-mazedul956-ecommercesol-vh0txgc5lvq.ws-us117.gitpod.io/api/assets?cursor=${cursor || ''}&search=${searchQuery}`);
+      const res = await fetch(`https://8080-mazedul956-ecommercesol-vh0txgc5lvq.ws-us118.gitpod.io/api/assets?cursor=${cursor || ''}&search=${searchQuery}`);
       const { data, total_count } = await res.json();
       setAssets(prev => cursor ? [...prev, ...data.resources] : data.resources);
       setPagination({ next_cursor: data.next_cursor, total: total_count });

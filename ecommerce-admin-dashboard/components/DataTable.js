@@ -18,7 +18,7 @@ const DataTable = ({
   keyField = '_id',
 }) => {
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border bg-white">
       <Table>
         <TableHeader>
           <TableRow>

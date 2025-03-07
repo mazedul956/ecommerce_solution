@@ -52,7 +52,7 @@ export default function AssetLibrary({ isOpen, onClose, onSelect }) {
 
   useEffect(() => {
     async function fetchAsset() {
-      const res = await axios.get("https://8080-mazedul956-ecommercesol-vh0txgc5lvq.ws-us117.gitpod.io/api/assets");
+      const res = await axios.get("https://8080-mazedul956-ecommercesol-vh0txgc5lvq.ws-us118.gitpod.io/api/assets");
       const data = res.data;
       setAssets(data.data.resources);
     }
