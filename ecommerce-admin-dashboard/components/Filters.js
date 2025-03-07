@@ -44,7 +44,7 @@ export default function Filters({ entity, filterOptions, existingFilters }) {
   };
 
   return (
-    <Card className="flex flex-wrap gap-4 p-4 mb-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+    <Card className="flex flex-wrap gap-4 p-4 mb-4 bg-white dark:bg-gray-800 rounded-lg">
       {filterOptions.map(({ key, type, placeholder, options }) => (
         <div key={key} className="flex flex-col">
           {type === "text" && (
@@ -75,6 +75,15 @@ export default function Filters({ entity, filterOptions, existingFilters }) {
               value={filters[key]}
               onChange={(e) => handleFilterChange(key, e.target.value)}
               className="border rounded-md dark:bg-gray-700 dark:border-gray-600"
+            />
+          )}
+          {type === "date" && (
+            <input
+              type="date"
+              placeholder={placeholder}
+              value={filters[key]}
+              onChange={(e) => handleFilterChange(key, e.target.value)}
+              className="border rounded-md dark:bg-gray-700 dark:border-gray-600 p-2"
             />
           )}
         </div>

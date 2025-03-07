@@ -43,7 +43,8 @@ export default function CreateProduct() {
   //   }
   // };
 
+  
   return (
-        <ProductForm />
+      <ProductForm />
   );
 }

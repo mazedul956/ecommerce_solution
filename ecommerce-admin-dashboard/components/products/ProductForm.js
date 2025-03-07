@@ -8,7 +8,7 @@ import {
 import { useSession } from "next-auth/react";
 import SideNavigation from "./SideNavigation";
 import ProductCreateUpdateHeader from "./ProductCreateUpdateHeader";
-import uploadImage from "@/utils/uploadImage";
+import uploadImage from "@/lib/utils/uploadImage";
 import AssetLibrary from "../AssetsLibrary";
 const categories = ["Electronics", "Fashion", "Home & Kitchen", "Books"];
 const brands = ["Apple", "Samsung", "Nike", "Sony"];
@@ -49,6 +49,10 @@ const ProductForm = ({product, isEditPage, productId}) => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  useEffect(() => {
+
+  }, [])
   
 
   const handleAddTag = () => {
